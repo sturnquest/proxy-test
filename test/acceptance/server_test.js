@@ -1,44 +1,51 @@
 const chai = require("chai");
 const expect = chai.expect;
-const url = require("url");
 
-var proxyUrl = "http://localhost:2000";
-var endPointUrl = "http://localhost:8080";
+const url = require("url");
+const request = require('request');
+
+var proxyBaseUrl = "http://localhost:2000";
+var replayBaseUrl = "http://localhost:8080/replay";
+
 
 describe("Proxy", function(){
 
-    it("replays request headers", function() {
+    it("forwards request headers", function(done) {
 
-        var relativePath = "/any/path";
-        var path = url.parse(proxyUrl + relativePath)
-        //var requestHeaders =
+        var path = "/proxy/a";
+        var proxyUrl = url.parse(proxyBaseUrl + path);
+        var expectedRequestHeaders = {"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "accept-language":"en-US,en;q=0.8", "cache-control": "max-age=0", "connection": "keep-alive",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36"};
 
-        var req = http.request({hostname: proxiedUrl.hostname, path: uri.path, headers: request.headers}, function(res) {
-            var r = {}
-            r.headers = res.headers;
-            r.status = res.statusCode;
+        // Make a request to the proxy
+        request({url: proxyUrl, headers: expectedRequestHeaders}, function(error) {
+            console.log("i'm here!");
+            expect(error).to.not.exist;
 
-            var data = []
-            res.on('data', function(chunk) {
-                data.push(chunk);
-            });
+            // Now check that the proxy forwarded the request headers to our destination server
+            var replayUrl =replayBaseUrl + path;
+            request(replayUrl, function(error, response, body) {
+                expect(error).to.not.exist;
 
-            res.on('end', function() {
-                var buffer = Buffer.concat(data);
-                r.body = buffer
-                cache.put(r)
-                deferred.resolve(r);
+                console.log(body);
+                var content = JSON.parse(body);
+                var requestHeaders = content.request.headers;
+
+                Object.keys(expectedRequestHeaders).forEach(function(key) {
+                    expect(expectedRequestHeaders[key]).to.equal(requestHeaders[key]);
+                });
+
+                done();
             });
         });
 
-        req.on('error', function(e) {
-            console.log('problem with request: ' + e.message);
-        });
 
-        req.end();
-
-        expect(expectedContent).to.deep.equal(content);
     })
+
+    // forwards response headers for content type
+    // forwards response headers unaltered
+    // returns correct status code
 
 })
 
