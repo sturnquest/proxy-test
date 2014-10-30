@@ -67,22 +67,10 @@ describe("Proxy", function() {
             expect(error).to.not.exist;
 
             var responseHeaders = response.headers;
+            expect(responseHeaders).to.have.property("server", "Earnest Proxy Tester");
+            expect(responseHeaders).to.have.property("x-powered-by", "Earnest");
 
-            // Now check that the proxy forwarded the request headers to our destination server
-            var replayUrl = replayBaseUrl + path;
-            request(replayUrl, function(error, response, body) {
-                expect(error).to.not.exist;
-
-                var content = JSON.parse(body);
-                console.log("body: " + body);
-                var expectedResponseHeaders = content.response.headers;
-
-                Object.keys(expectedResponseHeaders).forEach(function(key) {
-                    expect(expectedResponseHeaders[key.toLowerCase()].toString()).to.equal(responseHeaders[key.toLowerCase()]);
-                });
-
-                done();
-            });
+            done();
         });
     })
 
@@ -111,11 +99,15 @@ describe("Proxy", function() {
         });
     })
 
+    it("does not cache more than the max allowed elements", function(done) {
+        var maxElementCount = 2;
 
+        for(var i = 0; i < maxElementCount; i++) {
 
-    // forwards response headers for content type
-    // forwards response headers unaltered
-    // returns correct status code
+        }
+
+        done();
+    })
 
 })
 
