@@ -8,7 +8,7 @@ function SizeResponse(contentLength) {
             content += '1';
         }
 
-        return {headers: {status: 200, server: "Earnest Proxy Tester", "X-Powered-By": "Earnest",  "X-Request-Type": "content-length",
+        return {headers: {status: 200, server: "Earnest Proxy Tester", "x-powered-by": "Earnest",  "x-request-type": "content-length",
             "content-type": "text/html"}, content: content, status: 200};
     }
 
@@ -19,7 +19,7 @@ var ContentTypeResponse = function(contentType) {
     this.contentType = contentType;
 
     this.generate = function() {
-        return {headers: {status: 200, server: "Earnest Proxy Tester", "X-Powered-By": "Earnest",  "X-Request-Type": "content-type",
+        return {headers: {status: 200, server: "Earnest Proxy Tester", "x-powered-by": "Earnest",  "x-request-type": "content-type",
             "content-type": this.contentType}, content: {description: "The requested content type is: " + this.contentType, date: new Date()}, status: 200};
     }
 
@@ -30,7 +30,7 @@ var StatusResponse = function(status) {
     this.status = status;
 
     this.generate = function() {
-        return {headers: {status: this.status, server: "Earnest Proxy Tester", "X-Powered-By": "Earnest",  "X-Request-Type": "status-code",
+        return {headers: {status: this.status, server: "Earnest Proxy Tester", "x-powered-by": "Earnest",  "x-request-type": "status-code",
             "content-type": "text/html"}, content: {description: "The requested status code is: " + this.contentType, date: new Date()}, status: this.status};
     }
 
@@ -41,8 +41,8 @@ var GenericResponse = function(path) {
     this.path = path;
 
     this.generate = function() {
-        return {headers: {status: 200, server: "Earnest Proxy Tester", "X-Powered-By": "Earnest",
-            "X-Request-Type": "generic", "content-type": "text/html"},
+        return {headers: {status: 200, server: "Earnest Proxy Tester", "x-powered-by": "Earnest",
+            "x-request-type": "generic", "content-type": "text/html"},
             content: {description: "The rain in spain falls mainly in the plain. Path: " + this.path, date: new Date()}, status: 200};
     }
 

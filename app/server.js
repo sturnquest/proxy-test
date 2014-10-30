@@ -28,6 +28,4 @@ var proxy = http.createServer(function(req, res) {
     res.end(JSON.stringify(content));
 });
 
-proxy.listen(8080, function() {
-    console.log("Recording Server listening on port: 8080");
-});
+exports.proxy = proxy;
