@@ -35,16 +35,13 @@ describe("Proxy", function() {
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36"};
 
         // Make a request to the proxy
-        request({url: proxyUrl, headers: expectedRequestHeaders}, function(error) {
-            expect(error).to.not.exist;
+        request({url: proxyUrl, headers: expectedRequestHeaders}, function() {
 
             // Now check that the proxy forwarded the request headers to our destination server
             var replayUrl = replayBaseUrl + path;
             request(replayUrl, function(error, response, body) {
-                expect(error).to.not.exist;
 
                 var content = JSON.parse(body);
-                console.log('content: ' + body);
                 var requestHeaders = content.request.headers;
 
                 Object.keys(expectedRequestHeaders).forEach(function(key) {
@@ -62,7 +59,6 @@ describe("Proxy", function() {
 
         // Make a request to the proxy
         request({url: proxyUrl}, function(error, response) {
-            expect(error).to.not.exist;
 
             var responseHeaders = response.headers;
             expect(responseHeaders).to.have.property("server", "Earnest Proxy Tester");
