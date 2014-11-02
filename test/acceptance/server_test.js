@@ -99,7 +99,6 @@ describe("Proxy", function() {
     it("does not cache more than the max allowed elements", function(done) {
         var pathIds = {};
         var snapshot = {};
-        var promises = []
 
         var mapResponse = function(proxyUrl) {
             return Q.nfcall(request, proxyUrl).then(function(response) {
@@ -109,28 +108,38 @@ describe("Proxy", function() {
             })
         }
 
+        var requestsToFillCache = []
         for(var i = 0; i < proxyCacheMaxElementCount; i++) {
-            var path = '/element/' + i;
-            promises.push(mapResponse(proxyBaseUrl + path));
+            requestsToFillCache.push(mapResponse(proxyBaseUrl + '/element/' + i));
         }
 
-        Q.all(promises).delay(100).then(function() {
-            var proxyUrl = proxyBaseUrl + '/extra/element';
-            return mapResponse(proxyUrl);
-        }).then(function() {
+        var requestOneMoreForCacheMiss = function() {
+            return mapResponse(proxyBaseUrl + '/extra/element');
+        }
+
+        var createSnapshot = function() {
             snapshot = JSON.parse(JSON.stringify(pathIds));
-        }).then(function() {
+        }
+
+        var repeatAllRequests = function() {
             var repeatRequests = Object.keys(pathIds).map(function (path) {
                 return mapResponse(proxyBaseUrl + path);
             });
             return Q.all(repeatRequests);
-        }).then(function() {
+        }
+
+        var verify = function() {
             expect(pathIds['/element/0']).to.equal(snapshot['/element/0']);
             expect(pathIds['/element/1']).to.equal(snapshot['/element/1']);
             expect(pathIds['/extra/element']).to.not.equal(snapshot['/extra/element']);
-        }).done(function() {
-            done();
-        });
+        }
+
+        Q.all(requestsToFillCache)
+            .then(requestOneMoreForCacheMiss)
+            .then(createSnapshot)
+            .then(repeatAllRequests)
+            .then(verify)
+            .done(done);
     })
 
 })
