@@ -1,30 +1,26 @@
 const chai = require("chai");
 const expect = chai.expect;
-
 const request = require('request');
-const exec = require('child_process').exec;
-const sleep = require('sleep');
+const server = require("./../../app/server.js").server;
+const Q = require('q');
 
 var proxyBaseUrl = "http://localhost:2000";
 var replayBaseUrl = "http://localhost:8080/replay";
-var child;
 
-var proxy = require("./../../app/server.js").proxy;
+var proxyCacheMaxElementCount = 2;
+
 
 beforeEach(function() {
-    proxy.listen(8080, function() {
+    server.listen(8080, function() {
         console.log("Recording Server listening on port: 8080");
     });
-    child = exec("ruby ~/projects/proxy/app/transparent_proxy.rb");
 
-    // Don't like haveing to sleep here but we need to allow some time for the
-    // child process to startup before we hit the proxy server
-    sleep.sleep(2);
+    // Clear the proxies cache
+    request(proxyBaseUrl + "/cache", function(error) {});
 })
 
 afterEach(function() {
-    child.kill();
-    proxy.close();
+    server.close();
 });
 
 
@@ -47,6 +43,7 @@ describe("Proxy", function() {
                 expect(error).to.not.exist;
 
                 var content = JSON.parse(body);
+                console.log('content: ' + body);
                 var requestHeaders = content.request.headers;
 
                 Object.keys(expectedRequestHeaders).forEach(function(key) {
@@ -100,13 +97,40 @@ describe("Proxy", function() {
     })
 
     it("does not cache more than the max allowed elements", function(done) {
-        var maxElementCount = 2;
+        var pathIds = {};
+        var snapshot = {};
+        var promises = []
 
-        for(var i = 0; i < maxElementCount; i++) {
-
+        var mapResponse = function(proxyUrl) {
+            return Q.nfcall(request, proxyUrl).then(function(response) {
+                var body = response[1];
+                pathIds[JSON.parse(body).response.content.path] = JSON.parse(body).response.content.id;
+                return pathIds;
+            })
         }
 
-        done();
+        for(var i = 0; i < proxyCacheMaxElementCount; i++) {
+            var path = '/element/' + i;
+            promises.push(mapResponse(proxyBaseUrl + path));
+        }
+
+        Q.all(promises).delay(100).then(function() {
+            var proxyUrl = proxyBaseUrl + '/extra/element';
+            return mapResponse(proxyUrl);
+        }).then(function() {
+            snapshot = JSON.parse(JSON.stringify(pathIds));
+        }).then(function() {
+            var repeatRequests = Object.keys(pathIds).map(function (path) {
+                return mapResponse(proxyBaseUrl + path);
+            });
+            return Q.all(repeatRequests);
+        }).then(function() {
+            expect(pathIds['/element/0']).to.equal(snapshot['/element/0']);
+            expect(pathIds['/element/1']).to.equal(snapshot['/element/1']);
+            expect(pathIds['/extra/element']).to.not.equal(snapshot['/extra/element']);
+        }).done(function() {
+            done();
+        });
     })
 
 })

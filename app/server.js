@@ -6,7 +6,7 @@ var response = require("./responses.js");
 
 var recorder = new Recorder();
 
-var proxy = http.createServer(function(req, res) {
+var server = http.createServer(function(req, res) {
     var path = url.parse(req.url).path;
 
     console.log("Received request for path: " + path);
@@ -28,4 +28,4 @@ var proxy = http.createServer(function(req, res) {
     res.end(JSON.stringify(content));
 });
 
-exports.proxy = proxy;
+exports.server = server;

@@ -1,3 +1,5 @@
+var uuid = require('node-uuid');
+
 function SizeResponse(contentLength) {
 
     this.contentLength = contentLength;
@@ -43,7 +45,7 @@ var GenericResponse = function(path) {
     this.generate = function() {
         return {headers: {status: 200, server: "Earnest Proxy Tester", "x-powered-by": "Earnest",
             "x-request-type": "generic", "content-type": "text/html"},
-            content: {description: "The rain in spain falls mainly in the plain. Path: " + this.path, date: new Date()}, status: 200};
+            content: {description: "The rain in spain falls mainly in the plain.", path: this.path, date: new Date(), id: uuid.v4()}, status: 200};
     }
 
 };
