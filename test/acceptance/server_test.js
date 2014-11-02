@@ -7,7 +7,8 @@ const Q = require('q');
 var proxyBaseUrl = "http://localhost:2000";
 var replayBaseUrl = "http://localhost:8080/replay";
 
-var proxyCacheMaxElementCount = 2;
+var proxyCacheMaxElementCount = 2; // count must match the setting used in the proxy under test
+var proxyTimeoutSeconds = 2; // seconds must match the setting used in the proxy under test
 
 
 beforeEach(function() {
@@ -139,6 +140,40 @@ describe("Proxy", function() {
             .then(createSnapshot)
             .then(repeatAllRequests)
             .then(verify)
+            .done(done);
+    })
+
+    it("expires cache elements", function(done) {
+        var expectedId;
+
+        var requestForKnownPath = function() {
+            return Q.nfcall(request, proxyBaseUrl + '/test/timeout').then(function(response) {
+                var body = response[1];
+                return JSON.parse(body).response.content.id;
+            })
+        }
+
+        var setExpectedId = function(id) {
+            expectedId = id;
+        }
+
+        var verify = function(id) {
+            expect(id).to.equal(expectedId);
+        }
+
+        var verifyCacheExpired = function(id) {
+            expect(id).to.not.equal(expectedId);
+        }
+
+        var expireCacheDelayMillis = (proxyTimeoutSeconds + 1) * 1000;
+
+        requestForKnownPath()
+            .then(setExpectedId)
+            .then(requestForKnownPath)
+            .then(verify)
+            .delay(expireCacheDelayMillis)
+            .then(requestForKnownPath)
+            .then(verifyCacheExpired)
             .done(done);
     })
 
