@@ -9,7 +9,7 @@ var replayBaseUrl = "http://localhost:8080/replay";
 
 var proxyCacheMaxElementCount = 4; // count must match the setting used in the proxy under test. make this > 2 so the size test works.
 var proxyTimeoutSeconds = 2; // seconds must match the setting used in the proxy under test
-var proxyMaxSizeBytes = 10240; // size must match the setting used in the proxy under test
+var proxyMaxSizeBytes = 1024; // size must match the setting used in the proxy under test
 
 
 beforeEach(function() {
@@ -180,9 +180,9 @@ describe("Proxy", function() {
 
         var mapResponse = function(proxyUrl) {
             return Q.nfcall(request, proxyUrl).then(function(response) {
-                response = response[0];
+                var body = JSON.parse(response[1]);
 
-                pathIds[response.headers['x-path']] = response.headers['x-id'];
+                pathIds[body.path] = body.id;
                 return pathIds;
             })
         }

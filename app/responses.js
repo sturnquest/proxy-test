@@ -6,11 +6,16 @@ function SizeResponse(contentLength, path) {
     this.path = path;
 
     this.generate = function() {
-        var body = '';
-        var maxLengthWithBufferForQuotes = (this.contentLength - 2);
-        for (var i = 0; i < maxLengthWithBufferForQuotes; i++) {
-            body += '1';
+
+        var body = {id: uuid.v4(), path: this.path, content: '1'}
+
+        var content = '';
+        var lengthOfContent = (this.contentLength - JSON.stringify(body).length);
+        for (var i = 0; i < lengthOfContent; i++) {
+            content += '1';
         }
+
+        body.content += content;
 
         return {headers: {status: 200, server: "Earnest Proxy Tester", "x-powered-by": "Earnest",  "x-request-type": "content-length",
             "content-type": "text/html", "x-id": uuid.v4(), "x-path": this.path}, body: body, status: 200};

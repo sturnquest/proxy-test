@@ -6,10 +6,10 @@ describe("Response", function(){
 
     it("generates a response with the requested size", function() {
 
-        var expectedResponse = {headers: {status: 200, server: "Earnest Proxy Tester", "x-powered-by": "Earnest",
-            "x-request-type": "content-length", "content-type": "text/html"}, body: "111111111", status: 200};
-
-        expect("111111111").to.equal(response("/content-length/11").generate().body);
+        var body = response("/content-length/95").generate().body;
+        expect(JSON.stringify(body).length).to.equal(95);
+        expect(body).to.have.property('path', '/content-length/95');
+        expect(body).to.have.property('id');
     })
 
     it("generates a response with the requested content type", function() {
