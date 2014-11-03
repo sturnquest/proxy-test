@@ -18,7 +18,7 @@ beforeEach(function() {
     });
 
     // Clear the proxies cache
-    request(proxyBaseUrl + "/cache", function(error) {});
+    request(proxyBaseUrl + "/clear", function(error) {});
 })
 
 afterEach(function() {
