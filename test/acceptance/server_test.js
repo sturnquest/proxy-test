@@ -28,7 +28,7 @@ afterEach(function() {
 
 describe("Proxy", function() {
 
-    it.skip("forwards request headers to target server", function(done) {
+    it("forwards request headers to target server", function(done) {
         var path = "/proxy/a";
         var proxyUrl = proxyBaseUrl + path;
         var expectedRequestHeaders = {"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",

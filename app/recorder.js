@@ -6,7 +6,9 @@ Recorder.prototype = {
     constructor: Recorder,
 
     put: function(path, request, response) {
-        this.memory[path] = {request: {headers: request.headers, method: request.method}, response: response};
+        var content = {request: {headers: request.headers, method: request.method}, response: response};
+        this.memory[path] = content;
+        return content;
     },
 
     get: function(path) {

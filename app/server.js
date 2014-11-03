@@ -9,23 +9,25 @@ var recorder = new Recorder();
 var server = http.createServer(function(req, res) {
     var path = url.parse(req.url).path;
 
-    console.log("Received request for path: " + path);
-
+    var content, body;
     var tokens = path.split("/");
+
     if (tokens[1] == "replay") {
         path = "/" + tokens.slice(2).join("/");
-        console.log("Replay content for path: " + path);
+        content = recorder.get(path);
+        body = content;
     } else {
-        recorder.put(path, req, response(path).generate());
+        content = recorder.put(path, req, response(path).generate());
+        body = content.response.body;
     }
 
-    var content = recorder.get(path);
     if (content === undefined) {
         content = {response: {status: 404, headers: {}}}
+        body = content;
     }
 
     res.writeHead(content.response.status, content.response.headers);
-    res.end(JSON.stringify(content.response.body));
+    res.end(JSON.stringify(body));
 });
 
 exports.server = server;
