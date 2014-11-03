@@ -25,7 +25,7 @@ var server = http.createServer(function(req, res) {
     }
 
     res.writeHead(content.response.status, content.response.headers);
-    res.end(JSON.stringify(content));
+    res.end(JSON.stringify(content.response.body));
 });
 
 exports.server = server;

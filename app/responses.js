@@ -1,17 +1,19 @@
 var uuid = require('node-uuid');
 
-function SizeResponse(contentLength) {
+function SizeResponse(contentLength, path) {
 
     this.contentLength = contentLength;
+    this.path = path;
 
     this.generate = function() {
         var body = '';
-        for (var i = 0; i < this.contentLength; i++) {
+        var maxLengthWithBufferForQuotes = (this.contentLength - 2);
+        for (var i = 0; i < maxLengthWithBufferForQuotes; i++) {
             body += '1';
         }
 
         return {headers: {status: 200, server: "Earnest Proxy Tester", "x-powered-by": "Earnest",  "x-request-type": "content-length",
-            "content-type": "text/html"}, body: body, status: 200};
+            "content-type": "text/html", "x-id": uuid.v4(), "x-path": this.path}, body: body, status: 200};
     }
 
 };
@@ -54,7 +56,7 @@ var response = function(path) {
     var tokens = path.substring(1).split("/");
     switch (tokens[0].toLowerCase()) {
         case "content-length":
-            return new SizeResponse(new Number(tokens[1]).valueOf());
+            return new SizeResponse(new Number(tokens[1]).valueOf(), path);
         case "content-type":
             tokens.shift();
             return new ContentTypeResponse(tokens.join("/"));
