@@ -1,7 +1,7 @@
 Proxy Test
 ===========
 
-<p>A quick way to run smoke tests against code submissions for the transparent proxy problem.</p>
+<p>A quick way to run smoke tests against code submissions for the transparent proxy problem. The proxy under test needs to expose a /clear url that the tests can hit to clear the cache in between specs.</p>
 
 Install and run unit tests
 ==========================
