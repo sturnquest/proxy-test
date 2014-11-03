@@ -18,14 +18,14 @@ describe("Recorder", function(){
         var response = {
             headers: {"Cache-Control": "no-cache", "Content-Type": "text/html; charset=utf-8",
                 "ETag": "2a8bd7f220529b18b77f59dd34095d98", "Expires": "Any Date"},
-            content: "Any random string",
+            body: "Any random string",
             status: 200
         };
 
         var path = "/any/random/path";
 
         var expectedContent = {request: {headers: request.headers, method: request.method},
-            response: {headers: response.headers, content: response.content, status: response.status}};
+            response: {headers: response.headers, body: response.body, status: response.status}};
 
         recorder.put(path, request, response);
         var content = recorder.get(path)

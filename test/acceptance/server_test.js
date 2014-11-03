@@ -100,7 +100,7 @@ describe("Proxy", function() {
         var mapResponse = function(proxyUrl) {
             return Q.nfcall(request, proxyUrl).then(function(response) {
                 var body = response[1];
-                pathIds[JSON.parse(body).response.content.path] = JSON.parse(body).response.content.id;
+                pathIds[JSON.parse(body).response.body.path] = JSON.parse(body).response.body.id;
                 return pathIds;
             })
         }
@@ -145,7 +145,7 @@ describe("Proxy", function() {
         var requestForKnownPath = function() {
             return Q.nfcall(request, proxyBaseUrl + '/test/timeout').then(function(response) {
                 var body = response[1];
-                return JSON.parse(body).response.content.id;
+                return JSON.parse(body).response.body.id;
             })
         }
 
