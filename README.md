@@ -21,8 +21,9 @@ a server that records and verifies requests from the proxy. The server listens o
 
 1. configure the proxy server to point to http://localhost:8080
 2. configure the proxy server params to be: {duration: 2 seconds, max-size: 1024 bytes, max-elements, 4}
-3. start the proxy server
-4. mocha test/acceptance
+3. configure test/acceptance/server_test.js to point to the proxy server e.g. var proxyBaseUrl = "http://localhost:3000";
+4. start the proxy server
+5. mocha test/acceptance
 
 Manual testing
 ===========================

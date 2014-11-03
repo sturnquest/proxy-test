@@ -4,7 +4,7 @@ const request = require('request');
 const server = require("./../../app/server.js").server;
 const Q = require('q');
 
-var proxyBaseUrl = "http://localhost:2000";
+var proxyBaseUrl = "http://localhost:3000";
 var replayBaseUrl = "http://localhost:8080/replay";
 
 var proxyCacheMaxElementCount = 4; // count must match the setting used in the proxy under test. make this > 2 so the size test works.
